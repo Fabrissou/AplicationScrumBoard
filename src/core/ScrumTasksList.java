@@ -9,22 +9,30 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class ScrumTasksList {
-    private String name;
-    private final ObservableList<ScrumTask> list = FXCollections.observableArrayList(new ArrayList<ScrumTask>());
+    private String listName;
+    private ArrayList<ScrumTask> list = new ArrayList<ScrumTask>();
 
     public ScrumTasksList() {
     }
 
-    public ObservableList<ScrumTask> getList() {
+    public String getListName() {
+        return listName;
+    }
+
+    public void setListName(String listName) {
+        this.listName = listName;
+    }
+
+    public ArrayList<ScrumTask> getList() {
         return list;
     }
 
-    public String getName() {
-        return name;
+    public void setList(ArrayList<ScrumTask> list) {
+        this.list = list;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.listName = name;
     }
 
     public void add(String taskName, String date) {

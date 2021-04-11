@@ -1,33 +1,34 @@
 package controller;
 
-import java.io.IOException;
-import java.net.URL;
 import java.time.LocalDate;
-import java.util.ResourceBundle;
 
 import core.ScrumTask;
 import core.ScrumTasksList;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 public class ControllerTaskList extends Controller {
+    Controller paneController;
     ScrumTasksList newList = new ScrumTasksList();
+    ObservableList<ScrumTask> newObsList = FXCollections.observableList(newList.getList());
 
-    private FlowPane table;
+    public void setPaneController(Controller paneController) {
+        this.paneController = paneController;
+    }
 
-    public void setTable(FlowPane table) {
-        this.table = table;
+    public void setNewList(ScrumTasksList list) {
+        newList = list;
+        setName(newList.getListName());
+        newObsList = FXCollections.observableList(newList.getList());
+        listOfTasks.setItems(newObsList);
     }
 
     @FXML
@@ -91,7 +92,7 @@ public class ControllerTaskList extends Controller {
             LocalDate currentDate = datePicker.getValue();
 
             if (!("".equals(taskName) && currentDate == null)) {
-                newList.add(taskName, currentDate == null ? "" : currentDate.toString());
+                newObsList.add(new ScrumTask(taskName, currentDate == null ? "" : currentDate.toString()));
             }
             closeCurrentWindow(create);
         });
@@ -131,11 +132,13 @@ public class ControllerTaskList extends Controller {
 
         editNameButton.setOnMouseClicked(mouseEvent -> {
             if (!("").equals(nameTask.getText())) {
-                thisTask.setName(nameTask.getText());
+                thisTask.setTaskName(nameTask.getText());
             }
+
             if (datePicker.getValue() != null) {
-                thisTask.setDate(datePicker.getValue().toString());
+                thisTask.setTaskDate(datePicker.getValue().toString());
             }
+
             listOfTasks.refresh();
             closeCurrentWindow(editNameButton);
         });
@@ -143,7 +146,7 @@ public class ControllerTaskList extends Controller {
 
     @FXML
     void initialize() {
-        listOfTasks.setItems(newList.getList());
+        listOfTasks.setItems(newObsList);
     }
 
     void setName(String name) {
@@ -163,7 +166,8 @@ public class ControllerTaskList extends Controller {
         showWindow(scene);
 
         yes.setOnMouseClicked(MouseEvent -> {
-            table.getChildren().remove(backPanel);
+            paneController.getTaskTable().getChildren().remove(backPanel);
+            paneController.scrumBoard.remove(newList);
             closeCurrentWindow(yes);
         });
 

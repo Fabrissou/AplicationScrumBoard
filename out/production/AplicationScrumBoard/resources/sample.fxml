@@ -15,17 +15,13 @@
        <Menu mnemonicParsing="false" text="Файл">
          <items>
                <MenuItem mnemonicParsing="false" onAction="#saveProgress" text="Сохранить" />
+               <MenuItem mnemonicParsing="false" onAction="#loadFile" text="Загрузить" />
            <MenuItem mnemonicParsing="false" onAction="#closeDesk" text="Закрыть" />
-         </items>
-       </Menu>
-       <Menu mnemonicParsing="false" text="Помощь">
-         <items>
-           <MenuItem mnemonicParsing="false" text="О программе" />
          </items>
        </Menu>
      </menus>
    </MenuBar>
-   <Button fx:id="createNewTask" layoutX="379.0" layoutY="4.0" mnemonicParsing="false" onMouseClicked="#createNewTask" prefHeight="0.0" prefWidth="0.0" style="-fx-background-color: #1f78d1#1f78d1;" text="+" textFill="WHITE" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+   <Button layoutX="379.0" layoutY="4.0" mnemonicParsing="false" onMouseClicked="#createNewTask" prefHeight="0.0" prefWidth="0.0" style="-fx-background-color: #1f78d1#1f78d1;" text="+" textFill="WHITE" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
       <font>
          <Font size="20.0" />
       </font>

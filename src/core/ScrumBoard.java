@@ -1,20 +1,25 @@
 package core;
 
 import controller.ControllerTaskList;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 
 public class ScrumBoard {
-    private final ObservableList<ControllerTaskList> board = FXCollections.observableArrayList(new ArrayList<ControllerTaskList>());
+    private ArrayList<ScrumTasksList> board = new ArrayList<ScrumTasksList>();
 
-    public void add(ControllerTaskList controller) {
-        board.add(controller);
+    public ArrayList<ScrumTasksList> getBoard() {
+        return board;
     }
 
-    public void remove(ControllerTaskList controller) {
-        board.remove(controller);
-        controller.closeThisList();
+    public void setBoard(ArrayList<ScrumTasksList> board) {
+        this.board = board;
+    }
+
+    public void add(ScrumTasksList tasksList) {
+        board.add(tasksList);
+    }
+
+    public void remove(ScrumTasksList tasksList) {
+        board.remove(tasksList);
     }
 }

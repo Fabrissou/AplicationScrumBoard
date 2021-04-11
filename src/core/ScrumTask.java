@@ -4,28 +4,32 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public class ScrumTask {
-    private String name;
-    private String date;
+    private String taskName;
+    private String taskDate;
 
     public ScrumTask(String name, String date) {
-        this.name = name;
-        this.date = date;
+        this.taskName = name;
+        this.taskDate = date;
     }
 
-    public String getName() {
-        return name;
+    public String getTaskName() {
+        return taskName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public String getTaskDate() {
+        return taskDate;
+    }
+
+    public void setTaskDate(String taskDate) {
+        this.taskDate = taskDate;
     }
 
     @Override
     public String toString() {
-        return name + "  " + date;
+        return taskName + "  " + taskDate;
     }
 }
