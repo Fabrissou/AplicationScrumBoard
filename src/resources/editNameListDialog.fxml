@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ControllerEditNameListDialog">
+   <children>
+      <TextField fx:id="textField" layoutX="20.0" layoutY="22.0" />
+      <Text layoutX="6.0" layoutY="17.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Введите новое название списка:" wrappingWidth="200.0" />
+      <Button layoutX="8.0" layoutY="54.0" mnemonicParsing="false" onMouseClicked="#changeName" prefHeight="26.0" prefWidth="80.0" text="Изменить" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" />
+      <Button layoutX="125.0" layoutY="55.0" mnemonicParsing="false" onMouseClicked="#close" prefWidth="80.0" text="Отмена" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+   </children>
+</AnchorPane>

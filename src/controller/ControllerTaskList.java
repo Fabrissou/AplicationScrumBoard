@@ -1,24 +1,35 @@
 package controller;
 
+import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
 import core.ScrumTask;
 import core.ScrumTasksList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class ControllerTaskList extends Controller {
     Controller paneController;
     ScrumTasksList newList = new ScrumTasksList();
     ObservableList<ScrumTask> newObsList = FXCollections.observableList(newList.getList());
+
+    static DataFormat dataFormat = new DataFormat("name", "list");
 
     public void setPaneController(Controller paneController) {
         this.paneController = paneController;
@@ -45,57 +56,14 @@ public class ControllerTaskList extends Controller {
 
     @FXML
     void editNameList(ActionEvent event) {
-        VBox box = new VBox();
-        box.setAlignment(Pos.CENTER);
-        HBox buttons = new HBox();
-        buttons.setAlignment(Pos.CENTER);
-        TextField listName = new TextField();
-        Button edit = new Button("Изменить название");
-        Button cancel = new Button("Отмена");
-        buttons.getChildren().addAll(edit, cancel);
-        box.getChildren().addAll(new Label("Введите новое название списка"), listName, buttons);
-        Scene scene = new Scene(box);
-        showWindow(scene);
-
-        cancel.setOnMouseClicked(mouseEvent -> closeCurrentWindow(cancel));
-
-        edit.setOnMouseClicked(mouseEvent -> {
-            setName(listName.getText());
-            listName.clear();
-            closeCurrentWindow(cancel);
-        });
+        ControllerEditNameListDialog controllerEditNameListDialog = loadDialogWindow("../resources/editNameListDialog.fxml").getController();
+        controllerEditNameListDialog.setController(this);
     }
 
     @FXML
     void addNew(MouseEvent event) {
-        VBox box = new VBox();
-        box.setAlignment(Pos.CENTER);
-        HBox buttons = new HBox();
-        buttons.setAlignment(Pos.CENTER);
-        TextField nameTask = new TextField();
-        Button create = new Button("Создать");
-        Button cancel = new Button("Отмена");
-        DatePicker datePicker = new DatePicker();
-        Label name = new Label("Введите название задачи:");
-        Label date = new Label("Введите дату:");
-        name.setMinHeight(25);
-        date.setMinHeight(25);
-        buttons.getChildren().addAll(create, cancel);
-        box.getChildren().addAll(name, nameTask, date, datePicker, new Label(), buttons);
-        Scene scene = new Scene(box);
-        showWindow(scene);
-
-        cancel.setOnMouseClicked(mouseEvent -> closeCurrentWindow(cancel));
-
-        create.setOnMouseClicked(mouseEvent -> {
-            String taskName = nameTask.getText();
-            LocalDate currentDate = datePicker.getValue();
-
-            if (!("".equals(taskName) && currentDate == null)) {
-                newObsList.add(new ScrumTask(taskName, currentDate == null ? "" : currentDate.toString()));
-            }
-            closeCurrentWindow(create);
-        });
+        ControllerAddNewTask controllerAddNewTask = loadDialogWindow("../resources/addNewTask.fxml").getController();
+        controllerAddNewTask.setController(this);
     }
 
     @FXML
@@ -105,48 +73,57 @@ public class ControllerTaskList extends Controller {
 
     @FXML
     void editSelectedItem(ActionEvent event) {
-        ScrumTask thisTask = listOfTasks.getSelectionModel().getSelectedItem();
-        int index = listOfTasks.getSelectionModel().getSelectedIndex();
-
-        VBox box = new VBox();
-        box.setAlignment(Pos.CENTER);
-        HBox buttons = new HBox();
-        buttons.setAlignment(Pos.CENTER);
-        TextField nameTask = new TextField();
-        DatePicker datePicker = new DatePicker();
-        Button editNameButton = new Button("Изменить задачу");
-        Button deleteButton = new Button("Удалить задачу");
-        Label name = new Label("Введите новое название задачи:");
-        Label date = new Label("Введите новую дату:");
-        name.setMinHeight(25);
-        date.setMinHeight(25);
-        buttons.getChildren().addAll(editNameButton, deleteButton);
-        box.getChildren().addAll(name, nameTask, date, datePicker, new Label(), buttons);
-        Scene scene = new Scene(box);
-        showWindow(scene);
-
-        deleteButton.setOnMouseClicked(mouseEvent -> {
-            newList.remove(index);
-            closeCurrentWindow(deleteButton);
-        });
-
-        editNameButton.setOnMouseClicked(mouseEvent -> {
-            if (!("").equals(nameTask.getText())) {
-                thisTask.setTaskName(nameTask.getText());
-            }
-
-            if (datePicker.getValue() != null) {
-                thisTask.setTaskDate(datePicker.getValue().toString());
-            }
-
-            listOfTasks.refresh();
-            closeCurrentWindow(editNameButton);
-        });
+        ControllerEditSelectedItem controllerEditSelectedItem = loadDialogWindow("../resources/editSelectedItem.fxml").getController();
+        controllerEditSelectedItem.setController(this);
     }
 
     @FXML
     void initialize() {
         listOfTasks.setItems(newObsList);
+        listOfTasks.setUserData(this);
+        listOfTasks.setOnDragDetected(new EventHandler<MouseEvent>(){
+            @Override
+            public void handle(MouseEvent event) {
+                Dragboard db = listOfTasks.startDragAndDrop(TransferMode.MOVE);
+                ScrumTask items = listOfTasks.getSelectionModel().getSelectedItem();
+
+                ClipboardContent content = new ClipboardContent();
+                if(items != null)
+                    content.put(dataFormat, items.toString());
+                else
+                    content.put(dataFormat, "");
+                db.setContent(content);
+                event.consume();
+            }
+        });
+
+        listOfTasks.setOnDragOver(new EventHandler<DragEvent>(){
+            @Override
+            public void handle(DragEvent event) {
+                event.acceptTransferModes(TransferMode.MOVE);
+            }
+        });
+
+        listOfTasks.setOnDragDropped(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                Dragboard dragboard = event.getDragboard();
+                if ((event.getGestureTarget() instanceof ListView) && (event.getGestureSource() instanceof ListView) && !"".equals(dragboard.getContent(dataFormat))) {
+                    ListView oldList = (ListView) event.getGestureSource();
+                    ControllerTaskList oldController = (ControllerTaskList) oldList.getUserData();
+                    oldController.removeTask();
+                    oldList.getSelectionModel().clearSelection();
+
+                    String[] task = dragboard.getContent(dataFormat).toString().split(" ");
+                    if (task.length == 1) {
+                        addTaskFromStr(task[0], "");
+                    } else {
+                        addTaskFromStr(task[0], task[1]);
+                    }
+                }
+                event.consume();
+            }
+        });
     }
 
     void setName(String name) {
@@ -172,5 +149,30 @@ public class ControllerTaskList extends Controller {
         });
 
         no.setOnMouseClicked(MouseEvent -> closeCurrentWindow(no));
+    }
+
+    public void addTaskFromStr(String name, String date) {
+        if (!("".equals(name) && "".equals(date))) {
+            newObsList.add(new ScrumTask(name, date));
+        }
+    }
+
+    public void removeTask() {
+        newList.remove(listOfTasks.getSelectionModel().getSelectedIndex());
+        listOfTasks.refresh();
+    }
+
+    public void changeTask(String nameTask, LocalDate date) {
+        ScrumTask thisTask = listOfTasks.getSelectionModel().getSelectedItem();
+
+        if (!("").equals(nameTask)) {
+            thisTask.setTaskName(nameTask);
+        }
+
+        if (date != null) {
+            thisTask.setTaskDate(date.toString());
+        }
+
+        listOfTasks.refresh();
     }
 }

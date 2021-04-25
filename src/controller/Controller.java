@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -68,39 +69,8 @@ public class Controller {
 
     @FXML
     private void createNewTask(MouseEvent event) {
-        VBox box = new VBox();
-        HBox buttons = new HBox();
-        box.setAlignment(Pos.CENTER);
-        buttons.setAlignment(Pos.CENTER);
-        TextField nameList = new TextField();
-        Button create = new Button("Создать список");
-        Button cancel = new Button("Отмена");
-        buttons.getChildren().addAll(create, cancel);
-        box.getChildren().addAll(new Label("Введите название списка"), nameList, buttons);
-        showWindow(new Scene(box));
-
-        cancel.setOnMouseClicked(mouseEvent -> {
-            closeCurrentWindow(cancel);
-        });
-
-        create.setOnMouseClicked(mouseEvent -> {
-            FXMLLoader listLoader = new FXMLLoader();
-            listLoader.setLocation(getClass().getResource("../resources/taskList.fxml"));
-
-            try {
-                listLoader.load();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-
-            ControllerTaskList taskListController = listLoader.getController();
-            scrumBoard.add(taskListController.newList);
-            taskListController.setPaneController(this);
-            taskListController.setName(nameList.getText());
-            nameList.clear();
-            taskTable.getChildren().add(listLoader.getRoot());
-            closeCurrentWindow(create);
-        });
+        ControllerCreateListDialog controllerCreateListDialog = loadDialogWindow("../resources/createListDialog.fxml").getController();
+        controllerCreateListDialog.setController(this);
     }
 
     @FXML
@@ -142,10 +112,46 @@ public class Controller {
                 newBoard = new Gson().fromJson(org.apache.commons.io.FileUtils.readFileToString(file, StandardCharsets.UTF_8),
                         ScrumBoard.class);
             } catch (IOException e) {
-
+                e.printStackTrace();
             }
         }
 
         return newBoard;
+    }
+
+    public void createList(String listName) {
+        FXMLLoader listLoader = new FXMLLoader();
+        listLoader.setLocation(getClass().getResource("../resources/taskList.fxml"));
+
+        try {
+            listLoader.load();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+
+        ControllerTaskList taskListController = listLoader.getController();
+        scrumBoard.add(taskListController.newList);
+        taskListController.setPaneController(this);
+        taskListController.setName(listName);
+        taskTable.getChildren().add(listLoader.getRoot());
+    }
+
+    public FXMLLoader loadDialogWindow(String name) {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource(name));
+
+        try {
+            loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Parent root = loader.getRoot();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.show();
+
+        return loader;
     }
 }

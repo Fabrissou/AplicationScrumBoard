@@ -12,6 +12,10 @@ public class ScrumTask {
         this.taskDate = date;
     }
 
+    public ScrumTask(String name) {
+        this.taskName = name;
+    }
+
     public String getTaskName() {
         return taskName;
     }
@@ -30,6 +34,6 @@ public class ScrumTask {
 
     @Override
     public String toString() {
-        return taskName + "  " + taskDate;
+        return taskName + " " + taskDate;
     }
 }
