@@ -77,16 +77,6 @@ public class Controller {
     void initialize() {
     }
 
-    void showWindow(Scene scene) {
-        Stage dialog = new Stage();
-        dialog.setMaxHeight(400);
-        dialog.setMaxWidth(400);
-        dialog.initStyle(StageStyle.UTILITY);
-        dialog.initModality(Modality.APPLICATION_MODAL);
-        dialog.setScene(scene);
-        dialog.show();
-    }
-
     void closeCurrentWindow(Node node) {
         Stage stage = (Stage) node.getScene().getWindow();
         stage.close();
@@ -130,7 +120,7 @@ public class Controller {
         }
 
         ControllerTaskList taskListController = listLoader.getController();
-        scrumBoard.add(taskListController.newList);
+        scrumBoard.add(taskListController.getList());
         taskListController.setPaneController(this);
         taskListController.setName(listName);
         taskTable.getChildren().add(listLoader.getRoot());
@@ -153,5 +143,10 @@ public class Controller {
         stage.show();
 
         return loader;
+    }
+
+    public void removeList(Node element, ScrumTasksList list) {
+        taskTable.getChildren().remove(element);
+        scrumBoard.remove(list);
     }
 }

@@ -2,6 +2,7 @@ package core;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Objects;
 
 public class ScrumTask {
     private String taskName;
@@ -35,5 +36,18 @@ public class ScrumTask {
     @Override
     public String toString() {
         return taskName + " " + taskDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ScrumTask scrumTask = (ScrumTask) o;
+        return Objects.equals(getTaskName(), scrumTask.getTaskName()) && Objects.equals(getTaskDate(), scrumTask.getTaskDate());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTaskName(), getTaskDate());
     }
 }

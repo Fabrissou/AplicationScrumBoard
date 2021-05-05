@@ -15,6 +15,11 @@ public class ScrumTasksList {
     public ScrumTasksList() {
     }
 
+    public ScrumTasksList(ArrayList<ScrumTask> newList, String name) {
+        this.list = newList;
+        this.listName = name;
+    }
+
     public String getListName() {
         return listName;
     }
@@ -37,6 +42,9 @@ public class ScrumTasksList {
 
     public void add(String taskName, String date) {
         list.add(new ScrumTask(taskName, date));
+    }
+    public void add(ScrumTask task) {
+        list.add(task);
     }
 
     public void remove(int index) {

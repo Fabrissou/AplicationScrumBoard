@@ -3,6 +3,7 @@ package controller;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,10 +27,31 @@ import javafx.stage.Stage;
 
 public class ControllerTaskList extends Controller {
     Controller paneController;
-    ScrumTasksList newList = new ScrumTasksList();
+    private ScrumTasksList newList = new ScrumTasksList();
     ObservableList<ScrumTask> newObsList = FXCollections.observableList(newList.getList());
 
+    public ScrumTasksList getList() {
+        return newList;
+    }
+
+    public ControllerTaskList() {
+    }
+
+    public ControllerTaskList(String name) {
+        Text text = new Text(name);
+        taskListName = text;
+        setName(name);
+    }
+
     static DataFormat dataFormat = new DataFormat("name", "list");
+
+    public ArrayList<ScrumTask> getNewList() {
+        return newList.getList();
+    }
+
+    public String getName() {
+        return taskListName.getText();
+    }
 
     public void setPaneController(Controller paneController) {
         this.paneController = paneController;
@@ -49,7 +71,7 @@ public class ControllerTaskList extends Controller {
     private AnchorPane backPanel;
 
     @FXML
-    public Text taskListName;
+    private Text taskListName;
 
     @FXML
     public MenuItem deleteThisList;
@@ -126,29 +148,14 @@ public class ControllerTaskList extends Controller {
         });
     }
 
-    void setName(String name) {
+    public void setName(String name) {
         newList.setName(name);
         taskListName.setText(name);
     }
 
     public void closeThisList() {
-        VBox box = new VBox();
-        box.setAlignment(Pos.CENTER);
-        Button yes = new Button("Да");
-        Button no = new Button("Нет");
-        HBox but = new HBox(yes, no);
-        but.setAlignment(Pos.CENTER);
-        box.getChildren().addAll(new Label("Вы действительно хотите удалить этот список?"), but);
-        Scene scene = new Scene(box);
-        showWindow(scene);
-
-        yes.setOnMouseClicked(MouseEvent -> {
-            paneController.getTaskTable().getChildren().remove(backPanel);
-            paneController.scrumBoard.remove(newList);
-            closeCurrentWindow(yes);
-        });
-
-        no.setOnMouseClicked(MouseEvent -> closeCurrentWindow(no));
+        ControllerCloseThisList controllerCloseThisList = loadDialogWindow("../resources/closeThisList.fxml").getController();
+        controllerCloseThisList.setController(this);
     }
 
     public void addTaskFromStr(String name, String date) {
@@ -174,5 +181,9 @@ public class ControllerTaskList extends Controller {
         }
 
         listOfTasks.refresh();
+    }
+
+    public void removeCurrentList() {
+        paneController.removeList(backPanel, newList);
     }
 }
